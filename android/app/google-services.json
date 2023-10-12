@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875258983670",
+    "project_id": "librarysmartapp",
+    "storage_bucket": "librarysmartapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875258983670:android:18f2e6262324b2129d68d7",
+        "android_client_info": {
+          "package_name": "Library.Smart.App"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875258983670-poniqelfcrpobbkj1ko175jgg42o6lm7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7tmWvB1bBxSHhbga2MekXRSpuMJGV6XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875258983670-poniqelfcrpobbkj1ko175jgg42o6lm7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
