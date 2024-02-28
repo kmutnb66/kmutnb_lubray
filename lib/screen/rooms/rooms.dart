@@ -349,7 +349,6 @@ class _RoomsViewState extends State<RoomsView> {
                                                     .user!.patron!.UserName);
                                             Navigator.pop(modal);
                                             Navigator.pop(context);
-                                            EasyLoading.showSuccess("สำเร็จ");
                                           },
                                           child: Text(
                                             'ยืนยัน',

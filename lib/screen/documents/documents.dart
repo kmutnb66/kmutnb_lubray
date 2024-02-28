@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:kmutnb_lubray/provider/ebok.dart';
+import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/books/booked.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -48,7 +49,7 @@ class _DocumentsViewState extends State<DocumentsView> {
                       child: TextField(
                         controller: keyword,
                         onSubmitted: (value) {
-                          provider.getItems(search: value,reflash: true);
+                          provider.getItems(search: value, reflash: true);
                         },
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -61,8 +62,8 @@ class _DocumentsViewState extends State<DocumentsView> {
                       width: 10,
                     ),
                     InkWell(
-                      onTap: (){
-                        provider.getItems(search: keyword.text,reflash: true);
+                      onTap: () {
+                        provider.getItems(search: keyword.text, reflash: true);
                       },
                       child: Container(
                           child: Icon(
@@ -101,29 +102,68 @@ class _DocumentsViewState extends State<DocumentsView> {
                               ),
                               title: Text(
                                   '${item.Title}\nAuthor : ${item.Author}\nPublishYear :${item.PublishYear}'),
-                              subtitle: TextButton.icon(
-                                  onPressed: () async {
-                                    try {
-                                      print(item.PathToFile);
-                                      await launch(Uri.parse(item.PathToFile!)
-                                          .toString());
-                                    } catch (err) {
-                                      EasyLoading.showInfo(
-                                          "ไม่สามารถเปิดไฟล์ได้");
-                                    }
-                                  },
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.grey)),
-                                  icon: Icon(
-                                    Icons.remove_red_eye_sharp,
-                                    color: Colors.white,
+                              subtitle: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextButton.icon(
+                                        onPressed: () async {
+                                          try {
+                                            await launch(
+                                                Uri.parse(item.PathToFile!)
+                                                    .toString());
+                                          } catch (err) {
+                                            EasyLoading.showInfo(
+                                                "ไม่สามารถเปิดไฟล์ได้");
+                                          }
+                                        },
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.grey)),
+                                        icon: Icon(
+                                          Icons.remove_red_eye_sharp,
+                                          color: Colors.white,
+                                          size: 12,
+                                        ),
+                                        label: Text('View',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12
+                                            ))),
                                   ),
-                                  label: Text('View',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ))),
+                                  SizedBox(width: 5,),
+                                  Expanded(
+                                    child: TextButton.icon(
+                                        onPressed: () async {
+                                          try {
+                                            UserProvider auth = Provider.of(
+                                                context,
+                                                listen: false);
+                                            await launch(Uri.parse(
+                                                    'https://lam.lib.kmutnb.ac.th/downloadcheck.php?b=${item.BibNumber}&name=http://library.kmutnb.ac.th/ebook2/${item.BibNumber}.pdf&isbn=&RegisID=${auth.user!.patronInfo!.barcode} ')
+                                                .toString());
+                                          } catch (err) {
+                                            EasyLoading.showInfo(
+                                                "ไม่สามารถดาวน์โหลดไฟล์ได้");
+                                          }
+                                        },
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.orange)),
+                                        icon: Icon(
+                                          Icons.download,
+                                          color: Colors.white,
+                                          size: 12,
+                                        ),
+                                        label: Text('Download',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12
+                                            ))),
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                       ],
@@ -140,10 +180,9 @@ class _DocumentsViewState extends State<DocumentsView> {
 
   void _scrollListener() async {
     EBookProvider provider = Provider.of(context, listen: false);
-    if (controller.position.extentAfter < 2 &&
-        !provider.loading) {
+    if (controller.position.extentAfter < 2 && !provider.loading) {
       EasyLoading.show();
-      await provider.getItems(search: keyword.text,next: true);
+      await provider.getItems(search: keyword.text, next: true);
       EasyLoading.dismiss();
     }
   }

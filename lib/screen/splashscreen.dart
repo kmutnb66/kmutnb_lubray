@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:kmutnb_lubray/environment.dart';
 import 'package:kmutnb_lubray/firebase/firebase-message.dart';
+import 'package:kmutnb_lubray/provider/news.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/auth/login.dart';
-import 'package:kmutnb_lubray/screen/home.dart';
+import 'package:kmutnb_lubray/screen/main_screen.dart';
 import 'package:kmutnb_package/model/enviroment.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +23,16 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
+    EasyLoading.instance
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..indicatorColor = Colors.red
+      ..backgroundColor = Color.fromRGBO(255, 255, 255, 0)
+      ..maskType = EasyLoadingMaskType.custom
+      ..maskColor = Colors.white.withOpacity(.8)
+      ..boxShadow = []
+      ..textColor = Colors.black
+      ..indicatorWidget = Image.asset('assets/images/loadding2.gif')
+      ..textPadding = EdgeInsets.zero;
     Future.delayed(Duration.zero, () {
       message.setNotiLocalInstance();
       message.onmessage();
@@ -32,7 +44,9 @@ class _SplashscreenState extends State<Splashscreen> {
     UserProvider provider = Provider.of(context, listen: false);
     await provider.getUser(loading: true);
     if (provider.user != null) {
-      MaterialPageRoute route = MaterialPageRoute(builder: (_) => HomeView());
+       NewsProvider news = Provider.of(context,listen: false);
+      await news.init();
+      MaterialPageRoute route = MaterialPageRoute(builder: (_) => MainScreen());
       Navigator.pushAndRemoveUntil(context, route, (route) => false);
     } else {
       MaterialPageRoute route = MaterialPageRoute(builder: (_) => Login());
@@ -48,10 +62,7 @@ class _SplashscreenState extends State<Splashscreen> {
             child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/icon/logo.png',
-              width: 200,
-            )
+
           ],
         )));
   }

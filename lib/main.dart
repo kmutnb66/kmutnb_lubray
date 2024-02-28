@@ -12,6 +12,7 @@ import 'package:kmutnb_lubray/provider/ebok.dart';
 import 'package:kmutnb_lubray/provider/hold.dart';
 import 'package:kmutnb_lubray/provider/itemList.dart';
 import 'package:kmutnb_lubray/provider/news.dart';
+import 'package:kmutnb_lubray/provider/noti.dart';
 import 'package:kmutnb_lubray/provider/room.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/splashscreen.dart';
@@ -78,6 +79,10 @@ class MyApp extends StatelessWidget {
         ), ChangeNotifierProvider(
           create: (context) {
             return EBookProvider();
+          },
+        ), ChangeNotifierProvider(
+          create: (context) {
+            return NotiProvider();
           },
         )
       ],

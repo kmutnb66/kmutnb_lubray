@@ -15,24 +15,28 @@ ApiServiceModel apiService = KmutnbService.apiService(env: Environment.data);
 
 class AuthService {
 
-  Future setUser(String id, String token) async {
+  Future<bool> setUser(String id, String token) async {
     PatronInfoModel? user;
+    bool status = false;
     try {
       EasyLoading.show();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var res = await apiService.patronInfo.list(convertUsername(id));
+      var body;
       if (res.statusCode == 200) {
-        user = PatronInfoModel.fromJson(res.body);
+         body = json.decode(res.body);
       }
-      if (user != null && user.patron_record != null) {
-        var data = user.patron_record!.last;
-        if (data.barcode != null) prefs.setString('barcode', data.barcode!);
-        if (data.patron_record_id != null)
-          prefs.setString('patron_record_id', data.patron_record_id!);
-        if (data.ptype_code != null)
-          prefs.setString('ptype_code', data.ptype_code.toString());
+      if (body['patron_record'] != null) {
+        var data = body['patron_record'].last;
+        if (data['barcode'] != null) prefs.setString('barcode', '${data['barcode']}');
+        if (data['patron_record_id'] != null)
+          prefs.setString('patron_record_id', '${data['patron_record_id']}');
+        if (data['patron_id'] != null){
+          prefs.setString('patron_id', '${data['patron_id']}');
+        }
         prefs.setString('token', token);
       }
+      status = true;
       EasyLoading.showSuccess("ยินดีต้อนรับ");
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
@@ -41,6 +45,7 @@ class AuthService {
     } catch (err) {
       EasyLoading.showError("เกิดข้อผิดพลาด");
     }
+    return status;
   }
 
   static get removeUser async {
@@ -63,18 +68,17 @@ class AuthService {
       File image = File(outputFilePath);
       var res =
           await apiService.patron.list(convertBarcode(prefs.getString('barcode')!));
+          print(res.statusCode);
       if (res.statusCode == 200) {
-        var body = jsonDecode(res.body);
-        List<PatronModel> patron = [];
-        body.map((item) => patron.add(PatronModel.fromMap(item))).toList();
         user = UserModel(
             image: await image.writeAsBytes(img.bodyBytes),
             token: prefs.getString('token'),
-            patron: patron.last,
+            patron: PatronModel.fromJson(res.body),
             patronInfo: PatronInfoList(
                 barcode: prefs.getString('barcode'),
                 patron_record_id: prefs.getString('patron_record_id'),
-                ptype_code: double.parse(prefs.getString('ptype_code')!)));
+                patron_id: prefs.getString('patron_id'),
+                ptype_code: 2));
       }
       if (loading) EasyLoading.dismiss();
     } on HttpException catch (err) {
@@ -82,6 +86,7 @@ class AuthService {
     } on SocketException catch (err) {
       EasyLoading.showError(err.message);
     } catch (err) {
+      print(err);
       if (loading) EasyLoading.dismiss();
     }
     return user;

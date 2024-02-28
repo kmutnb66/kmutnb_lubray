@@ -54,6 +54,7 @@ class _MyHoldsViewState extends State<MyHoldsView>
       child: ListTile(
         title: Text("หนังสือที่ยืม: $title"),
         subtitle: Text('วันยืมออก: $checkout\nวันกำหนดส่ง: $num_day_late \nวันยืมเหลือ: $late วัน'),
+        
         // trailing: Icon(Icons.remove_red_eye,color: Colors.orange,),
       ),
     );

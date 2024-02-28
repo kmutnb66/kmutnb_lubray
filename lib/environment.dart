@@ -13,11 +13,11 @@ class Environment {
             "app.lib.kmutnb.ac.th",
             "202.28.17.14"
           ],
-          appName: 'KMUTNB LIBRARY',
+          appName: 'KMUTNB Library',
           product: true,
           url:
               "https://food-storage.ap-south-1.linodeobjects.com/My App/Kmutnb/app-release.apk",
-          version: "1.8");
+          version: "1.8.4");
     } else {
       return EnvironmentModel(apiUrls: [
         "202.28.17.35",
@@ -26,7 +26,7 @@ class Environment {
         "smartroom.lib.kmutnb.ac.th",
         "app.lib.kmutnb.ac.th",
         "202.28.17.14"
-      ], appName: 'KMUTNB LIBRARY Dev', product: false, version: "1.0");
+      ], appName: 'KMUTNB Library Dev', product: false, version: "1.0");
     }
   }
 }

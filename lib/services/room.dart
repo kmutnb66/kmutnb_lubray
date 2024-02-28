@@ -30,11 +30,14 @@ class RoomService {
     try {
       data.forEach((key,value) {
         value.forEach((_key, _value) {
-          rooms.add(RoomBookingModel(
+          _value.forEach((time,room_number){
+            rooms.add(RoomBookingModel(
+            id: _key,
             date: key,
-            time: _key,
-            room_number: _value
+            time: time,
+            room_number: room_number
           ));
+          });
         });
       });
       return rooms;

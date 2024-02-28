@@ -321,8 +321,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "472c253a88dc7f7bba12ef170fd734dba0b6e722"
+      ref: e701d9b
+      resolved-ref: e701d9b3d0845a35a9282cc3c5e9927b6d2bcd02
       url: "https://github.com/kmutnb66/kmutnb_package.git"
     source: git
     version: "0.0.1"
@@ -410,6 +410,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.1"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "8.1.6"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.6.1"
   petitparser:
     dependency: transitive
     description:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:kmutnb_lubray/provider/room.dart';
+import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_package/model/room_booking.dart';
 import 'package:provider/provider.dart';
 
@@ -49,15 +51,45 @@ class RoomBookingView extends StatelessWidget {
                     child: Column(
                       children: [
                         for (var item in items)
-                        Container(
-                          margin: EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1,color: Colors.black)
-                          ),
-                          child: ListTile(
-                            title: Text("เลขที่ห้อง :${item.room_number}\nวันที่ :${DateFormat('dd MMMM yyyy').format(DateTime.parse(item.date!))}\nเวลา :${item.time}"),
-                          ),
-                        )
+                          Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.grey.shade300, width: 1)),
+                            child: ListTile(
+                              title: Text(
+                                  "ไอดีจอง :${item.id}\nเลขที่ห้อง :${item.room_number}\nวันที่ :${DateFormat('dd MMMM yyyy').format(DateTime.parse(item.date!))}\nเวลา :${item.time}"),
+                              trailing: Wrap(
+                                children: [
+                                  RaisedButton(
+                                    child: Text('ยกเลิกการจอง',style: TextStyle(color: Colors.white),),
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      UserProvider auth = Provider.of(context,listen: false);
+                                      showDialog(context: context, builder: (_){
+                                        return AlertDialog(
+                                          content: Container(child: Text('ต้องการยกเลิกการจอง\n${item.id}?'),),
+                                          actions: [
+                                            TextButton(onPressed: ()=>Navigator.pop(context), child: Text('ยกเลิก')),
+                                            TextButton(onPressed: ()async{
+                                              EasyLoading.show();
+                                              UserProvider auth = Provider.of(context,listen: false);
+                                              await provider.cancel(bookroom_id: item.id!, username: auth.user!.patron!.UserName!);
+                                              await provider.roomBooking(username: auth.user!.patron!.UserName);
+                                              EasyLoading.showSuccess('สำเร็จ');
+                                              Navigator.pop(context);
+                                            }, child: Text('ตกลง',style: TextStyle(color: Colors.red),))
+                                          ],
+                                        );
+                                      });
+                                  })
+                                ],
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ))

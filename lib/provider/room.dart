@@ -37,13 +37,12 @@ class RoomProvider with ChangeNotifier {
       }
       items = RoomService().formatDataRoom(body['roomInfo']['data']);
     } on ErrorExceptionCustom catch (err) {
-      EasyLoading.showInfo(err.message);
+      EasyLoading.showInfo(err.message,duration: Duration(seconds: 2));
     } on HttpException catch (err) {
-      EasyLoading.showError(err.message);
+      EasyLoading.showError(err.message,duration: Duration(seconds: 2));
     } on SocketException catch (err) {
-      EasyLoading.showError(err.message);
+      EasyLoading.showError(err.message,duration: Duration(seconds: 2));
     } catch (err) {
-      print(err);
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
     notifyListeners();
@@ -57,6 +56,13 @@ class RoomProvider with ChangeNotifier {
         "bookroom_date": DateFormat("yyyy-MM-dd").format(s_date),
         "user_id": user_id
       });
+      var body = jsonDecode(res.body);
+      if(body['BookroomInfo'] != null){
+        throw ErrorExceptionCustom(code: "204", message: "${body['BookroomInfo']['massage']}");
+      }
+      EasyLoading.showSuccess("สำเร็จ");
+    } on ErrorExceptionCustom catch (err) {
+      EasyLoading.showInfo(err.message, duration: Duration(seconds: 2));
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {
@@ -72,11 +78,35 @@ class RoomProvider with ChangeNotifier {
         "username": username,
       });
       Map<String, dynamic> body = jsonDecode(res.body);
+      if(body['MyRoom'].length == 0){
+        room_booking = [];
+        throw ErrorExceptionCustom(code: "204", message: "ไม่พบรายการจอง");
+      }
       room_booking = RoomService().formatDataBooking(body['MyRoom']);
+    } on ErrorExceptionCustom catch (err) {
+      EasyLoading.showError(err.message, duration: Duration(seconds: 2));
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {
       EasyLoading.showError(err.message);
+    } catch (err) {
+      EasyLoading.showError('เกิดข้อผิดพลาด');
+    }
+    notifyListeners();
+  }
+
+  Future cancel({required String bookroom_id,required String username}) async {
+    try {
+      await apiService.roomBooking.cancel(query: {
+        "bookroom_id":bookroom_id,
+        "username":username   
+      });
+    } on ErrorExceptionCustom catch (err) {
+      EasyLoading.showError(err.message,duration: Duration(seconds: 2));
+    } on HttpException catch (err) {
+      EasyLoading.showError(err.message,duration: Duration(seconds: 2));
+    } on SocketException catch (err) {
+      EasyLoading.showError(err.message,duration: Duration(seconds: 2));
     } catch (err) {
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
