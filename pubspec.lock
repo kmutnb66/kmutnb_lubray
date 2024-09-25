@@ -321,8 +321,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: e701d9b
-      resolved-ref: e701d9b3d0845a35a9282cc3c5e9927b6d2bcd02
+      ref: "4186ec0"
+      resolved-ref: "4186ec000287b4eb9a427383631b0a9630c2900e"
       url: "https://github.com/kmutnb66/kmutnb_package.git"
     source: git
     version: "0.0.1"

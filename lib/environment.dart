@@ -15,9 +15,8 @@ class Environment {
           ],
           appName: 'KMUTNB Library',
           product: true,
-          url:
-              "https://food-storage.ap-south-1.linodeobjects.com/My App/Kmutnb/app-release.apk",
-          version: "1.8.4");
+          url:"https://food-storage.ap-south-1.linodeobjects.com/My App/Kmutnb/app-release.apk",
+          version: "1.9.4");
     } else {
       return EnvironmentModel(apiUrls: [
         "202.28.17.35",

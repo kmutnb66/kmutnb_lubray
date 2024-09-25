@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:kmutnb_lubray/environment.dart';
 import 'package:kmutnb_lubray/firebase/firebase-message.dart';
 import 'package:kmutnb_lubray/provider/news.dart';
+import 'package:kmutnb_lubray/provider/noti.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/auth/login.dart';
 import 'package:kmutnb_lubray/screen/main_screen.dart';
@@ -35,22 +36,29 @@ class _SplashscreenState extends State<Splashscreen> {
       ..textPadding = EdgeInsets.zero;
     Future.delayed(Duration.zero, () {
       message.setNotiLocalInstance();
-      message.onmessage();
+      message.onmessage(context);
       checkuser();
     });
   }
 
   checkuser() async {
     UserProvider provider = Provider.of(context, listen: false);
-    await provider.getUser(loading: true);
-    if (provider.user != null) {
-       NewsProvider news = Provider.of(context,listen: false);
-      await news.init();
-      MaterialPageRoute route = MaterialPageRoute(builder: (_) => MainScreen());
-      Navigator.pushAndRemoveUntil(context, route, (route) => false);
-    } else {
-      MaterialPageRoute route = MaterialPageRoute(builder: (_) => Login());
-      Navigator.pushAndRemoveUntil(context, route, (route) => false);
+    try {
+      await provider.getUser(loading: true);
+      if (provider.user != null) {
+        NewsProvider news = Provider.of(context, listen: false);
+        NotiProvider notiProvider = Provider.of(context, listen: false);
+        await news.init();
+        await notiProvider.getItems(patron_barcode: provider.user!.patronInfo!.barcode!,reflash: true);
+        MaterialPageRoute route =
+            MaterialPageRoute(builder: (_) => MainScreen());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      } else {
+        MaterialPageRoute route = MaterialPageRoute(builder: (_) => Login());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      }
+    } catch (err) {
+      print(err);
     }
   }
 
@@ -61,9 +69,7 @@ class _SplashscreenState extends State<Splashscreen> {
         body: Center(
             child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-
-          ],
+          children: [],
         )));
   }
 }

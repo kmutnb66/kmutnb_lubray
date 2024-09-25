@@ -17,15 +17,20 @@ class NotiProvider with ChangeNotifier {
 
   Future getItems({required String patron_barcode,bool reflash = false, bool next = false}) async {
     loading = true;
-    if (reflash) {
       page.pageNumber = 0;
       items = [];
-    }
+    // if (reflash) {
+    //   page.pageNumber = 0;
+    //   items = [];
+    // }
     if (next) page.pageNumber += page.limit;
     try {
       var res = await apiService.notiHttp.list(patron_barcode: patron_barcode);
+      print(res.request);
       var body = jsonDecode(res.body);
       body.map((data)=>items!.add(NotiModel.fromMap(data))).toList();
+      print(items);
+      // print(items!.where((element) => element.Status =='1').length);
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {
@@ -40,7 +45,11 @@ class NotiProvider with ChangeNotifier {
   Future read({required String notifyRecId}) async {
     try {
       var res = await apiService.notiHttp.read(notifyRecId: notifyRecId);
+      print(notifyRecId);
+      print(res.request);
+      print(res.statusCode);
       item = items!.firstWhere((data) => data.TransacetionRecId == notifyRecId);
+      
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {

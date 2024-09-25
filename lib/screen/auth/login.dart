@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:kmutnb_lubray/environment.dart';
 import 'package:kmutnb_lubray/provider/news.dart';
+import 'package:kmutnb_lubray/provider/noti.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/home.dart';
 import 'package:kmutnb_lubray/screen/main_screen.dart';
@@ -63,7 +64,9 @@ class _LoginState extends State<Login> {
                     if (status) {
                       UserProvider provider =
                           Provider.of(context, listen: false);
+                      NotiProvider notiProvider = Provider.of(context, listen: false);
                       await provider.getUser();
+                      await notiProvider.getItems(patron_barcode: provider.user!.patronInfo!.barcode!,reflash: true);
                       NewsProvider news = Provider.of(context,listen: false);
                       await news.init();
                       MaterialPageRoute route =

@@ -8,6 +8,7 @@ import 'package:kmutnb_lubray/widgets/widget-images.dart';
 import 'package:kmutnb_package/model/my_holds.dart';
 import 'package:kmutnb_package/model/room_booking.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingView extends StatelessWidget {
   BookingView();
@@ -38,27 +39,16 @@ class BookingView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    'รายการจองหนังสือ',
-                    style: TextStyle(fontSize: 28),
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Divider(
-                  height: 0,
-                  thickness: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
                 if (item == null)
                   Center(
                     child: Column(
-                      children: [Icon(Icons.list_alt), Text("ไม่พบการจอง")],
+                      children: [
+                        Image.asset(
+                          'assets/icon/booking.png',
+                          width: 200,
+                        ),
+                        Text("ไม่พบการจอง")
+                      ],
                     ),
                   ),
                 if (item != null)
@@ -83,9 +73,10 @@ class BookingView extends StatelessWidget {
                                     height: 120,
                                     fit: BoxFit.contain,
                                     radius: 5,
-                                    path: item.item_book!.images!.CoverURL!
-                                                .length >
-                                            0
+                                    path: item.item_book != null &&
+                                            item.item_book!.images!.CoverURL!
+                                                    .length >
+                                                0
                                         ? item.item_book!.images!.CoverURL!
                                             .first.cover_url!
                                         : ''),
@@ -98,39 +89,38 @@ class BookingView extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      text(
-                                          head: 'ไอดีจอง',
-                                          txt: '${item.id!.split('/').last}'),
+                                      // text(
+                                      //     head: 'ไอดีจอง',
+                                      //     txt: '${item.id!.split('/').last}'),
                                       text(
                                           head: 'ชื่อเรื่อง',
-                                          txt: '${item.item_book!.title}'),
+                                          txt:
+                                              '${item.item_book != null ? item.item_book!.title : '-'}'),
                                       text(
                                           head: 'สถานที่รับหนังสือ',
                                           txt: '${item.pickupLocation!.name!}'),
                                       text(
                                           head: 'สถานะ',
-                                          txt: '${item.status!.name!}'),
-                                                 RaisedButton(
-                                    child: Text('ยกเลิกการจอง',style: TextStyle(color: Colors.white),),
-                                    color: Colors.red,
-                                    onPressed: () {
-                                      UserProvider auth = Provider.of(context,listen: false);
-                                      showDialog(context: context, builder: (_){
-                                        return AlertDialog(
-                                          content: Container(child: Text('ต้องการยกเลิกการจอง\n${item.id!.split('/').last}?'),),
-                                          actions: [
-                                            TextButton(onPressed: ()=>Navigator.pop(context), child: Text('ยกเลิก')),
-                                            TextButton(onPressed: ()async{
-                                              EasyLoading.show();
-                                              Navigator.pop(context);
-                                              UserProvider auth = Provider.of(context,listen: false);
-                                              await provider.cancel(holdId: '${item.id!.split('/').last}');
-                                              await provider.getItemMybooking(patron_id: auth.user!.patronInfo!.patron_id!);
-                                            }, child: Text('ตกลง',style: TextStyle(color: Colors.red),))
-                                          ],
-                                        );
-                                      });
-                                  })
+                                          txt:
+                                              '${item.status != null ? item.status!.name : '-'}'),
+                                      RaisedButton(
+                                          child: Text(
+                                            'ยกเลิกการจอง',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          color: Colors.red,
+                                          onPressed: () async {
+                                            UserProvider auth = Provider.of(
+                                                context,
+                                                listen: false);
+                                            try {
+                                              await launch(Uri.parse('https://injan.kmutnb.ac.th/patroninfo').replace(queryParameters: {'name':auth.user!.patron!.DisplayName,'code':auth.user!.patronInfo!.barcode}).toString());
+                                            } catch (err) {
+                                              EasyLoading.showInfo(
+                                                  "เกิดข้้อผิดพลาด");
+                                            }
+                                          })
                                     ],
                                   ),
                                 )

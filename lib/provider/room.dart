@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:kmutnb_lubray/environment.dart';
+import 'package:kmutnb_lubray/model/smartroom.dart';
 import 'package:kmutnb_lubray/services/room.dart';
 import 'package:kmutnb_package/exception/error.dart';
 import 'package:kmutnb_package/kmutnb_package.dart';
 import 'package:kmutnb_package/model/default.dart';
+import 'package:kmutnb_package/model/enviroment.dart';
 import 'package:kmutnb_package/model/room.dart';
 import 'package:kmutnb_package/model/room_booking.dart';
 
@@ -18,8 +20,14 @@ class RoomProvider with ChangeNotifier {
   RoomModel? s_item;
   DefaultModel? s_time;
   List<RoomModel>? items;
-  List<RoomBookingModel>? room_booking;
+  List<SmartRoomModel>? room_booking;
   DateTime s_date = DateTime.now();
+  Map status = {
+    '1' : 'จอง',
+    '2' : 'เข้าใช้' ,
+    '3' : 'walk-in (เข้่าใช้โดยไม่ได้จองล่วงหน้า)',
+    '6' : 'not access จองแล้วไม่มาใช้งาน'
+  };
 
   Future getItems({DateTime? date, String username = ""}) async {
     if (date != null) {
@@ -74,15 +82,15 @@ class RoomProvider with ChangeNotifier {
 
   roomBooking({String? username}) async {
     try {
-      var res = await apiService.roomBooking.list(query: {
-        "username": username,
-      });
+      var res = await apiService.customService.list('/LibMobile/v1/SmartRoom/History/$username',appName: ApiName.smartapp);
+      print(res.request);
       Map<String, dynamic> body = jsonDecode(res.body);
-      if(body['MyRoom'].length == 0){
+      if(body['total'] < 1){
         room_booking = [];
         throw ErrorExceptionCustom(code: "204", message: "ไม่พบรายการจอง");
       }
-      room_booking = RoomService().formatDataBooking(body['MyRoom']);
+      room_booking = [];
+      body['entries'].map((data)=>room_booking!.add(SmartRoomModel.fromMap(data))).toList();
     } on ErrorExceptionCustom catch (err) {
       EasyLoading.showError(err.message, duration: Duration(seconds: 2));
     } on HttpException catch (err) {
@@ -90,6 +98,7 @@ class RoomProvider with ChangeNotifier {
     } on SocketException catch (err) {
       EasyLoading.showError(err.message);
     } catch (err) {
+      print(err);
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
     notifyListeners();

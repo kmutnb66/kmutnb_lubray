@@ -57,7 +57,6 @@ class _HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
-
     Widget btnIcon(
         {String? text, required String path, GestureTapCallback? onTap}) {
       return InkWell(
@@ -156,21 +155,41 @@ class _HomeViewState extends State<HomeView>
                           ),
                         ),
                         actions: [
-                          Container(
-                            width: 42,
-                            child: InkWell(
-                              onTap: () async {
-                                NotiProvider provider =
-                                    Provider.of(context, listen: false);
-                                await provider.getItems(
-                                    patron_barcode: item.patronInfo!.barcode!,
-                                    reflash: true);
-                                MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (_) => NotifyView());
-                                Navigator.push(context, route);
-                              },
-                              child: Image.asset('assets/icon/chat.png'),
-                            ),
+                          Consumer(
+                            builder: (_,NotiProvider notiProvider,Widget? child ) {
+                              var num_noti = notiProvider.items != null ? notiProvider.items!.where((element) => element.Status =='1').length : 0;
+                              return Container(
+                                width: 42,
+                                margin: EdgeInsets.only(top: 10),
+                                child: InkWell(
+                                  onTap: () async {
+                                    MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (_) => NotifyView());
+                                    Navigator.push(context, route);
+                                  },
+                                  child: Stack(
+                                    overflow: Overflow.visible,
+                                    children: [
+                                      Image.asset('assets/icon/chat.png'),
+                                      if(num_noti > 0)
+                                         Positioned(
+                                        top: -8,
+                                        right: 0,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(100)
+                                          ),
+                                          child: Text('${num_noti > 99 ? '99+' : num_noti}',style: TextStyle(color: Colors.white,fontSize: 9),),
+                                        )),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
                           ),
                           Container(
                             width: 35,

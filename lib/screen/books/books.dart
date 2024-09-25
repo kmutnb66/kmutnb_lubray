@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:kmutnb_lubray/provider/book.dart';
+import 'package:kmutnb_lubray/provider/hold.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/books/booked.dart';
+import 'package:kmutnb_lubray/screen/holds/scan.dart';
 import 'package:kmutnb_lubray/widgets/widget-images.dart';
 import 'package:provider/provider.dart';
 
@@ -59,6 +61,36 @@ class BooksView extends StatelessWidget {
                     child: Container(
                         child: Icon(
                           Icons.search,
+                          size: 30,
+                        ),
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(100))),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      MaterialPageRoute route = MaterialPageRoute(builder: (_)=>ScanBooking(booking: true,));
+                      Navigator.push(context, route).then((value) async{
+                        if(value){
+                          HoldProvider holdProvider = Provider.of(context,listen: false);
+                          EasyLoading.show();
+                          String? name = holdProvider.more_item!.more_item_info!.last.title;
+                          if(name != null){
+                            await provider.getItems(search: name);
+                            keyword.text = name;
+                          }
+                          EasyLoading.dismiss();
+                        }
+                      });
+                    },
+                    child: Container(
+                        child: Icon(
+                          Icons.qr_code_scanner,
                           size: 30,
                         ),
                         width: 50,

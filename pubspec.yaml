@@ -50,7 +50,7 @@ dependencies:
   kmutnb_package:
     git: 
      url: https://github.com/kmutnb66/kmutnb_package.git
-     ref: e701d9b
+     ref: 4186ec0
   permission_handler: ^8.1.6
 
 dev_dependencies:

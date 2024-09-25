@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanBooking extends StatefulWidget {
-  const ScanBooking({Key? key}) : super(key: key);
+  bool? booking;
+  ScanBooking({this.booking});
 
   @override
   State<StatefulWidget> createState() => _ScanBookingState();
@@ -110,11 +111,15 @@ class _ScanBookingState extends State<ScanBooking> {
             await controller.resumeCamera();
         }
         if (status != null || status!) {
-          MaterialPageRoute route =
+          if(widget.booking == null){
+              MaterialPageRoute route =
               MaterialPageRoute(builder: (_) => BookDetailView());
           Navigator.push(context, route)
               .then((value) async => await controller.resumeCamera());
           EasyLoading.dismiss();
+          }else{
+            Navigator.pop(context,status);
+          }
         }
       }
       setState(() {});

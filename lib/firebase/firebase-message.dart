@@ -1,5 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kmutnb_lubray/provider/noti.dart';
+import 'package:kmutnb_lubray/provider/user.dart';
+import 'package:provider/provider.dart';
 
 class Message {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -48,8 +52,11 @@ class Message {
         payload: 'I just haven\'t Met You Yet');
   }
 
-  onmessage() {
+  onmessage(BuildContext context) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        UserProvider userProvider = Provider.of(context,listen: false);
+        NotiProvider notiProvider = Provider.of(context, listen: false);
+        notiProvider.getItems(patron_barcode: userProvider.user!.patronInfo!.barcode!,reflash: true);
       return sendNotification(
           message.notification?.title, message.notification?.body);
     });

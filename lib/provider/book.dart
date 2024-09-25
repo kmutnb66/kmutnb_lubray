@@ -64,19 +64,21 @@ class BookProvider with ChangeNotifier {
 
   getItemMybooking({required String patron_id}) async {
     try {
-      var res = await apiService.book.my(patron_id: patron_id);
-      my_item = MyHoldsModel.fromJson(res.body);
+      var res = await apiService.customService.list('/LibMobile/v1/patron/$patron_id/holds/history',appName: ApiName.smartapp);
+      var body = jsonDecode(res.body);
+      my_item = MyHoldsModel(total: body['total'],start: body['start'],entries: []);
       if (my_item!.total == null || my_item!.total == 0) {
         my_item = null;
         throw ErrorExceptionCustom(code: "204", message: "ไม่พบรายการจอง");
       }
+      body['entries'].map((data)=>my_item!.entries!.add(MybookingListModel(record: data['BibId'],pickupLocation: LocationModel(code: data['PickupLocation'],name: data['PickupLocation'])))).toList();
       List<MybookingListModel> items = [];
       for (var item in my_item!.entries!) {
-        String bib_id = item.record!.split('/').last;
-        item.book_detail = BookDetailModel.fromMap(
-            await jsonDecode((await apiService.book.oject(id: bib_id)).body));
-        if (item.book_detail!.bibIds!.length > 0) {
-          item.item_book = BookBibModel.fromMap(await jsonDecode(
+        String bib_id = item.record!;
+        var book_detail = jsonDecode((await apiService.book.oject(id: bib_id)).body);
+        if(book_detail['code'] != 107) item.book_detail =  BookDetailModel.fromMap(book_detail);
+        if (item.book_detail != null && item.book_detail!.bibIds!.length > 0) {
+          item.item_book = BookBibModel.fromMap(jsonDecode(
               (await apiService.book
                       .mydetail(id: item.book_detail!.bibIds!.first))
                   .body));
@@ -92,7 +94,7 @@ class BookProvider with ChangeNotifier {
       my_item!.entries = items;
     } on ErrorExceptionCustom catch (err) {
       my_item = null;
-      EasyLoading.showError(err.message, duration: Duration(seconds: 2));
+      // EasyLoading.showError(err.message, duration: Duration(seconds: 2));
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {
@@ -101,6 +103,7 @@ class BookProvider with ChangeNotifier {
       print(err);
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
+    EasyLoading.dismiss();
     notifyListeners();
   }
 

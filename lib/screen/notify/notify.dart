@@ -14,7 +14,8 @@ class NotifyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
         builder: (BuildContext context, NotiProvider provider, Widget? child) {
-      List<NotiModel>? items = provider.items;
+      List<NotiModel>? items = provider.items != null ? provider.items : [];
+      var num_noti = items!.where((element) => element.Status =='1').length;
       return Scaffold(
           body: SafeArea(
               child: Container(
@@ -25,9 +26,16 @@ class NotifyView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Center(
-                            child: Text(
-                              'รายการแจ้งเตือน',
-                              style: TextStyle(fontSize: 28),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'รายการแจ้งเตือน',
+                                  style: TextStyle(fontSize: 28),
+                                ),
+                                if(num_noti > 0)
+                                Container(alignment: Alignment.center,margin: EdgeInsets.only(top:5,left: 5),padding: EdgeInsets.all(6),decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(100)),child: Text('$num_noti',style: TextStyle(color: Colors.white,fontSize: 12),))
+                              ],
                             ),
                           ),
                         ),
@@ -48,11 +56,11 @@ class NotifyView extends StatelessWidget {
                         Expanded(
                             child: SingleChildScrollView(
                                 child: Column(children: [
-                          for (NotiModel item in items!)
+                          for (NotiModel item in items)
                             Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  // color: Colors.white,
                                   border: Border.all(
                                       color: Colors.grey.shade300, width: 1)),
                               child: ListTile(
@@ -65,11 +73,13 @@ class NotifyView extends StatelessWidget {
                                      EasyLoading.dismiss();
                                   }
                                   MaterialPageRoute route = MaterialPageRoute(builder: (_)=>NotifyDetailView());
-                                  Navigator.push(context, route);
+                                  Navigator.push(context, route).then((value) => {provider.getItems(patron_barcode: auth.user!.patronInfo!.barcode!)});
                                 },
+                                leading: item.Status == '1' ? Container(margin: EdgeInsets.only(top: 12),width: 10,height: 10,decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(100)),) : null,
+                                minLeadingWidth: 10,
                                 title: Text("${item.Mesg}",maxLines: 1,overflow: TextOverflow.ellipsis,),
-                                focusColor: item.Status == '1' ? Colors.orange : null,
-                                subtitle: Text('${DateFormat("dd/MM/yyyy HH:mm").format(DateTime.parse(item.UpdateDT!))}'),
+                                // focusColor: item.Status == '1' ? Colors.orange : null,
+                                subtitle: Text('${DateFormat("dd/MM/yyyy HH:mm").format(DateTime.parse(item.EnterDT!))}'),
                               ),
                             )
                         ])))
