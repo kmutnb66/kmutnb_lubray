@@ -42,6 +42,7 @@ class RoomService {
       });
       return rooms;
     } catch (err) {
+      print(err);
       return null;
     }
   }

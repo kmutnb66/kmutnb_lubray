@@ -39,6 +39,7 @@ class RoomProvider with ChangeNotifier {
         "username": username,
         "date": DateFormat('yyyy-MM-dd').format(s_date)
       });
+      print(res.request);
       Map<String, dynamic> body = jsonDecode(res.body);
       if (body['roomInfo']['data'] == null) {
         throw ErrorExceptionCustom(code: body['roomInfo']['status'].toString(),message: body['roomInfo']['massage']);

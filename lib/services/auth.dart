@@ -49,10 +49,14 @@ class AuthService {
   }
 
   static get removeUser async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+   try{
+     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? regis_id = await FirebaseMessaging.instance.getToken();
     await apiService.patronInfo.logout(regis: regis_id!);
     prefs.clear();
+   }catch(err){
+      print(err);
+   }
   }
 
   Future<UserModel?> getUser({bool loading = false}) async {
@@ -64,7 +68,7 @@ class AuthService {
           .image(query: {"stdcode": prefs.getString('barcode')});
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String appDocPath = appDocDir.path;
-      String outputFilePath = '$appDocPath/std.jpg';
+      String outputFilePath = '$appDocPath/${prefs.getString('barcode')}.jpg';
       File image = File(outputFilePath);
       var res =
           await apiService.patron.list(convertBarcode(prefs.getString('barcode')!));

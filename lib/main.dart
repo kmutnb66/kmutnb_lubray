@@ -101,6 +101,7 @@ class MyApp extends StatelessWidget {
           textTheme: TextTheme(
 
           ),
+          
           visualDensity: VisualDensity.adaptivePlatformDensity,
           primarySwatch: Colors.orange,
         ),

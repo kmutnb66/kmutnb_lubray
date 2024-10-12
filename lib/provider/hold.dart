@@ -87,6 +87,9 @@ class HoldProvider with ChangeNotifier {
     try {
       var res = await apiService.overdueItem.list(patron_record_id: id);
       overdue_item = OverdueItemModel.fromJson(res.body);
+      if (overdue_item!.overdueItem!.length < 1) {
+        await getHold(id);
+      }
     } on HttpException catch (err) {
       EasyLoading.showError(err.message);
     } on SocketException catch (err) {
@@ -114,16 +117,42 @@ class HoldProvider with ChangeNotifier {
       if (body['entries'] != null) {
         for (var item in body['entries']) {
           var id = item['item'].split('/').last!;
-          var res_detail = jsonDecode((await apiService.book.oject(id: id)).body);
-          BookBibModel? bib;
-          BookDetailModel? book_detail;
-          if (res_detail['code'] != 107) book_detail = BookDetailModel.fromMap(res_detail);
-          if (book_detail != null && book_detail.bibIds!.length > 0) {
-            bib = BookBibModel.fromJson((await apiService.book.mydetail(id: book_detail.bibIds!.first)).body);
+          var res_detail =
+              jsonDecode((await apiService.book.oject(id: id)).body);
+          CirculationModel circulation = CirculationModel.fromMap(item);
+          var now = DateTime.now();
+          var dDay = DateTime.parse(circulation.dueDate!);
+          if (dDay.difference(now).inDays > 0) {
+            BookBibModel? bib;
+            BookDetailModel? book_detail;
+            if (res_detail['code'] != 107)
+              book_detail = BookDetailModel.fromMap(res_detail);
+            if (book_detail != null && book_detail.bibIds!.length > 0) {
+              bib = BookBibModel.fromJson((await apiService.book
+                      .mydetail(id: book_detail.bibIds!.first))
+                  .body);
+            }
+            bib!.images = ImageModel.fromJson(
+                (await apiService.moreItemInfo.cover(bib_record_id: id)).body);
+            bib.item = BookDetailModel.fromJson(
+                (await apiService.book.oject(id: id)).body);
+            hold_item!.add(circulation..bib = bib);
+          } else {
+            BookBibModel? bib;
+            BookDetailModel? book_detail;
+            if (res_detail['code'] != 107)
+              book_detail = BookDetailModel.fromMap(res_detail);
+            if (book_detail != null && book_detail.bibIds!.length > 0) {
+              bib = BookBibModel.fromJson((await apiService.book
+                      .mydetail(id: book_detail.bibIds!.first))
+                  .body);
+            }
+            if (overdue_item == null) {
+              overdue_item = OverdueItemModel(overdueItem: []);
+            }
+            overdue_item!.overdueItem!
+                .add(OverdueItemList(title: bib!.title,checkout_gmt: circulation.outDate,due_gmt: circulation.dueDate));
           }
-          bib!.images = ImageModel.fromJson((await apiService.moreItemInfo.cover(bib_record_id: id)).body);
-          bib.item = BookDetailModel.fromJson((await apiService.book.oject(id: id)).body);
-          hold_item!.add(CirculationModel.fromMap(item)..bib=bib);
         }
       }
     } on ErrorExceptionCustom catch (err) {

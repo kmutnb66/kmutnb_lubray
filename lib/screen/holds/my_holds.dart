@@ -84,7 +84,7 @@ class _MyHoldsViewState extends State<MyHoldsView>
           child: Column(children: [
             for (var item in items)
               itemCard(
-                  title: item.best_author,
+                  title: item.best_title,
                   checkout: dateform(DateTime.parse(item.checkout_gmt!)),
                   num_day_late:
                       dateform(DateTime.parse(item.last_checkin_gmt!)),

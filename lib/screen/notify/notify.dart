@@ -71,6 +71,8 @@ class NotifyView extends StatelessWidget {
                                      await provider.read(notifyRecId: item.TransacetionRecId!);
                                      await provider.getItems(reflash: true,patron_barcode: auth.user!.patronInfo!.barcode!);
                                      EasyLoading.dismiss();
+                                  }else{
+                                    provider.openMessage(notifyRecId: item.TransacetionRecId!);
                                   }
                                   MaterialPageRoute route = MaterialPageRoute(builder: (_)=>NotifyDetailView());
                                   Navigator.push(context, route).then((value) => {provider.getItems(patron_barcode: auth.user!.patronInfo!.barcode!)});

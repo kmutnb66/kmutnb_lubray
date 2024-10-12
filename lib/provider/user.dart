@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:kmutnb_lubray/services/auth.dart';
@@ -15,8 +16,17 @@ class UserProvider with ChangeNotifier {
   }
 
   Future logout() async {
+   try{
     await AuthService.removeUser;
+     if(user!.image == null){
+      File file = File(user!.image!.path);
+      await file.delete();
+      file.deleteSync();
+     }
     user = null;
+   }catch(err){
+    print(err);
+   }
     notifyListeners();
   }
 

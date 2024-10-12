@@ -60,6 +60,7 @@ class BookDetailView extends StatelessWidget {
                             width: 100,
                             height: 120,
                             fit: BoxFit.contain,
+                            iconImageEmpty: 'book-empty.png',
                             radius: 5,
                             path: item.images!.CoverURL!.length > 0
                                 ? item.images!.CoverURL!.first.cover_url!

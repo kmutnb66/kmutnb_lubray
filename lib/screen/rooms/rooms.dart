@@ -3,6 +3,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:kmutnb_lubray/provider/room.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
+import 'package:kmutnb_lubray/widgets/pdf.dart';
+import 'package:kmutnb_lubray/widgets/widget-images.dart';
 import 'package:kmutnb_package/model/default.dart';
 import 'package:provider/provider.dart';
 
@@ -114,7 +116,10 @@ class _RoomsViewState extends State<RoomsView> {
                       child: Center(
                         child: Column(
                           children: [
-                            Icon(Icons.room_service_outlined,size: 48,),
+                            Icon(
+                              Icons.room_service_outlined,
+                              size: 48,
+                            ),
                             Text('ไม่พบห้องติว'),
                           ],
                         ),
@@ -146,17 +151,55 @@ class _RoomsViewState extends State<RoomsView> {
                                             'assets/icon/door.png',
                                             width: 100,
                                           ),
-                                          Positioned(
-                                              top: 15,
-                                              left: 38,
-                                              child: Text(item.room_name!))
+                                          item.room_name!.length <= 3
+                                              ? Positioned(
+                                                  top: 15,
+                                                  left:
+                                                      item.room_name!.length ==
+                                                              2
+                                                          ? 40
+                                                          : 38,
+                                                  child: Text(item.room_name!))
+                                              : Positioned(
+                                                  top: 15,
+                                                  left: 35,
+                                                  child: Container(
+                                                      width: 32,
+                                                      child: Text(
+                                                        item.room_name!,
+                                                        style: TextStyle(
+                                                            fontSize: 10),
+                                                      )))
                                         ],
                                       ),
                                       SizedBox(
                                         width: 12,
                                       ),
-                                      Text(
-                                          "สถานะห้อง : ${item.full! ? 'เต็ม' : 'ว่าง'}")
+                                      Column(
+                                        children: [
+                                          Text(
+                                              "สถานะห้อง : ${item.full! ? 'เต็ม' : 'ว่าง'}"),
+                                          OutlinedButton(
+                                              onPressed: () {
+                                                String path = 'http://202.28.17.254/upload/room/${item.room_description}';
+                                                if(path.split('.').last== 'pdf'){
+                                                       MaterialPageRoute route =
+                                                    MaterialPageRoute(
+                                                        builder: (_) => ViewPdf(
+                                                              title: item
+                                                                  .room_name,
+                                                              path:path,
+                                                            ));
+                                                Navigator.push(context, route);
+                                                }else{
+                                                  showDialog(context: context, builder: (_)=>AlertDialog(
+                                                    content: SingleChildScrollView(child: imagesNf(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height,path: path,radius: 0,fit: BoxFit.fill)),
+                                                  ));
+                                                }
+                                              },
+                                              child: Text('รายละเอียดห้อง'))
+                                        ],
+                                      ),
                                     ],
                                   ),
                                   SizedBox(

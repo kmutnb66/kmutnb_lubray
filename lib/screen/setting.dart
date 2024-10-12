@@ -159,39 +159,6 @@ class _SettingViewState extends State<SettingView> with WidgetsBindingObserver {
               onTap: () async {
                 EasyLoading.show();
                 try {
-                  await launch(Uri.parse('https://docs.google.com/forms/d/e/1FAIpQLScXNdWtjf6bJ93jxFwAAWYL4LCyZKopok1BspWSGCVQLOMyPQ/viewform').toString());
-                  EasyLoading.dismiss();
-                } catch (err) {
-                  EasyLoading.showInfo("ทำแบบสอบถามไม่สำเร็จ");
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.assessment_outlined,
-                      size: 40,
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      'ทำแบบสอบถาม',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Divider(
-              thickness: 3,
-            ),
-            InkWell(
-              onTap: () async {
-                EasyLoading.show();
-                try {
                   await launch(Uri.parse(Environment.data.url!).toString());
                   EasyLoading.dismiss();
                 } catch (err) {

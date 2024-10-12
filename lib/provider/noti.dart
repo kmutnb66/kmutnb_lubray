@@ -45,9 +45,6 @@ class NotiProvider with ChangeNotifier {
   Future read({required String notifyRecId}) async {
     try {
       var res = await apiService.notiHttp.read(notifyRecId: notifyRecId);
-      print(notifyRecId);
-      print(res.request);
-      print(res.statusCode);
       item = items!.firstWhere((data) => data.TransacetionRecId == notifyRecId);
       
     } on HttpException catch (err) {
@@ -57,6 +54,11 @@ class NotiProvider with ChangeNotifier {
     } catch (err) {
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
+    notifyListeners();
+  }
+
+  openMessage({required String notifyRecId}){
+    item = items!.firstWhere((data) => data.TransacetionRecId == notifyRecId);
     notifyListeners();
   }
 

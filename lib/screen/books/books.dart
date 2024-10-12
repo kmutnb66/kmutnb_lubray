@@ -162,6 +162,7 @@ class BooksView extends StatelessWidget {
                                       height: 120,
                                       radius: 2,
                                       fit: BoxFit.contain,
+                                      iconImageEmpty: 'book-empty.png',
                                       path:
                                           item.bib!.images!.CoverURL!.length ==
                                                   1

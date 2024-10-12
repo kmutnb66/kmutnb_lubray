@@ -3,6 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:kmutnb_lubray/provider/ebok.dart';
 import 'package:kmutnb_lubray/provider/user.dart';
 import 'package:kmutnb_lubray/screen/books/booked.dart';
+import 'package:kmutnb_lubray/widgets/widget-images.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -95,11 +96,7 @@ class _DocumentsViewState extends State<DocumentsView> {
                                     Border.all(color: Colors.black, width: 1)),
                             child: ListTile(
                               onTap: () {},
-                              leading: Icon(
-                                Icons.file_copy_outlined,
-                                size: 50,
-                                color: Colors.black,
-                              ),
+                              leading: imagesNf(width: 50, height: 100,path: '',iconImageEmpty: 'e-book-empty.png',),
                               title: Text(
                                   '${item.Title}\nAuthor : ${item.Author}\nPublishYear :${item.PublishYear}'),
                               subtitle: Row(

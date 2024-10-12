@@ -54,6 +54,7 @@ class _BookedViewState extends State<BookedView> {
                             width: 100,
                             height: 120,
                             radius: 2,
+                            iconImageEmpty: 'book-empty.png',
                             fit: BoxFit.contain,
                             path: item!.bib!.images!.CoverURL!.length == 1
                                 ? item.bib!.images!.CoverURL!.first.cover_url
@@ -170,12 +171,10 @@ class _BookedViewState extends State<BookedView> {
                                     neededBy: start,
                                     recordType: 'b',
                                     pickupLocation: location));
-                            if (status) {
                               MaterialPageRoute route =
                                   MaterialPageRoute(builder: (_) => HomeView());
                               Navigator.pushAndRemoveUntil(
                                   context, route, (route) => false);
-                            }
                           },
                           child: Text('ยืนยัน'),
                         ),

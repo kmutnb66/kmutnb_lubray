@@ -62,26 +62,49 @@ class BookProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Map<String, dynamic>> holdsAndhistory(
+      {required String patron_id}) async {
+    Map<String, dynamic> res = Map();
+    var res_holds = jsonDecode((await apiService.customService.list(
+            '/LibMobile/v1/patron/$patron_id/holds',
+            appName: ApiName.smartapp))
+        .body);
+    if (res_holds['total'] == null) res_holds['total'] = 0;
+    
+    return res = {
+      'total': res_holds['total'] ,
+      'start': res_holds['start'],
+      'entries':res_holds['entries']
+    };
+  }
+
   getItemMybooking({required String patron_id}) async {
     try {
-      var res = await apiService.customService.list('/LibMobile/v1/patron/$patron_id/holds/history',appName: ApiName.smartapp);
-      var body = jsonDecode(res.body);
-      my_item = MyHoldsModel(total: body['total'],start: body['start'],entries: []);
+      var res = await holdsAndhistory(patron_id: patron_id);
+      my_item =
+          MyHoldsModel(total: res['total'], start: res['start'], entries: []);
       if (my_item!.total == null || my_item!.total == 0) {
         my_item = null;
         throw ErrorExceptionCustom(code: "204", message: "ไม่พบรายการจอง");
       }
-      body['entries'].map((data)=>my_item!.entries!.add(MybookingListModel(record: data['BibId'],pickupLocation: LocationModel(code: data['PickupLocation'],name: data['PickupLocation'])))).toList();
+      res['entries']
+          .map((data) => my_item!.entries!.add(MybookingListModel(
+              record: (data['record'] as String).split('/').last,
+              pickupLocation: LocationModel(
+                  code: data['PickupLocation'], name: data['PickupLocation']))))
+          .toList();
       List<MybookingListModel> items = [];
       for (var item in my_item!.entries!) {
         String bib_id = item.record!;
-        var book_detail = jsonDecode((await apiService.book.oject(id: bib_id)).body);
-        if(book_detail['code'] != 107) item.book_detail =  BookDetailModel.fromMap(book_detail);
+        var book_detail =
+            jsonDecode((await apiService.book.oject(id: bib_id)).body);
+        if (book_detail['code'] != 107)
+          item.book_detail = BookDetailModel.fromMap(book_detail);
         if (item.book_detail != null && item.book_detail!.bibIds!.length > 0) {
-          item.item_book = BookBibModel.fromMap(jsonDecode(
-              (await apiService.book
-                      .mydetail(id: item.book_detail!.bibIds!.first))
-                  .body));
+          item.item_book = BookBibModel.fromMap(jsonDecode((await apiService
+                  .book
+                  .mydetail(id: item.book_detail!.bibIds!.first))
+              .body));
         }
         if (item.item_book != null) {
           item.item_book!.images = ImageModel.fromMap(jsonDecode(
@@ -101,6 +124,7 @@ class BookProvider with ChangeNotifier {
       EasyLoading.showError(err.message);
     } catch (err) {
       print(err);
+      print('kefo');
       EasyLoading.showError('เกิดข้อผิดพลาด');
     }
     EasyLoading.dismiss();
@@ -156,7 +180,7 @@ class BookProvider with ChangeNotifier {
       var body = jsonDecode(res.body);
       if (body['description'] != null) {
         throw ErrorExceptionCustom(
-            code: "204",
+            code: '${body['code']}',
             message:
                 "${Translate.get(text: '${body['code']}') != '${body['code']}' ? Translate.get(text: '${body['code']}') : body['description']}");
       }
@@ -172,7 +196,7 @@ class BookProvider with ChangeNotifier {
       EasyLoading.showError(err.message);
       return false;
     } catch (err) {
-      EasyLoading.showError('เกิดข้อผิดพลาด');
+      EasyLoading.showError(Translate.get(text: '132')!);
       return false;
     }
   }
@@ -180,11 +204,11 @@ class BookProvider with ChangeNotifier {
   Future<bool> cancel({required String holdId}) async {
     try {
       var res = await apiService.customService.delete(
-          '/LibMobile/v1/patrons/holds',
-          holdId,appName: ApiName.smartapp);
+          '/LibMobile/v1/patrons/holds', holdId,
+          appName: ApiName.smartapp);
       var body = jsonDecode(res.body);
-      if(body == null){
-           throw ErrorExceptionCustom(
+      if (body == null) {
+        throw ErrorExceptionCustom(
             code: "204", message: "ยกเลิกการจองไม่สำเร็จ");
       }
       if (body != null && body['description'] != null) {
@@ -203,7 +227,6 @@ class BookProvider with ChangeNotifier {
       EasyLoading.showError(err.message);
       return false;
     } catch (err) {
-      print(err);
       EasyLoading.showError('เกิดข้อผิดพลาด');
       return false;
     }

@@ -73,6 +73,7 @@ class BookingView extends StatelessWidget {
                                     height: 120,
                                     fit: BoxFit.contain,
                                     radius: 5,
+                                    iconImageEmpty: 'book-empty.png',
                                     path: item.item_book != null &&
                                             item.item_book!.images!.CoverURL!
                                                     .length >
@@ -98,11 +99,11 @@ class BookingView extends StatelessWidget {
                                               '${item.item_book != null ? item.item_book!.title : '-'}'),
                                       text(
                                           head: 'สถานที่รับหนังสือ',
-                                          txt: '${item.pickupLocation!.name!}'),
+                                          txt: '${item.pickupLocation!.name != null ? item.pickupLocation!.name : '-'}'),
                                       text(
                                           head: 'สถานะ',
                                           txt:
-                                              '${item.status != null ? item.status!.name : '-'}'),
+                                              '${item.status != null ? item.status!.name : 'จองอยู่'}'),
                                       RaisedButton(
                                           child: Text(
                                             'ยกเลิกการจอง',
